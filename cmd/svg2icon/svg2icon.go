@@ -7,12 +7,13 @@ package svg2icon
 import (
 	"errors"
 	"fmt"
-	"github.com/julian-bruyers/svg2icon/internal/icns"
-	"github.com/julian-bruyers/svg2icon/internal/ico"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/julian-bruyers/svg2icon/internal/icns"
+	"github.com/julian-bruyers/svg2icon/internal/ico"
 )
 
 type PathType int
@@ -33,13 +34,7 @@ const (
 //   - Generic format: generates both formats with custom naming (.icon or no extension)
 func Run() {
 	// Validate svg2icon call arguments
-	if len(os.Args) == 2 {
-		switch os.Args[1] {
-		case "help", "-h", "--help", "?":
-			showUsage()
-			os.Exit(1)
-		}
-	} else if len(os.Args) != 3 {
+	if len(os.Args) != 3 {
 		showUsage()
 		os.Exit(1)
 	}
