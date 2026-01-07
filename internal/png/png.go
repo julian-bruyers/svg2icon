@@ -5,14 +5,40 @@
 package png
 
 import (
-	"bytes"
-	"image"
-	"image/png"
+	"context"
+	"fmt"
 	"os"
+	"sync"
 
-	"github.com/srwiley/oksvg"
-	"github.com/srwiley/rasterx"
+	"github.com/kanrichan/resvg-go"
 )
+
+var (
+	contextInstance *resvg.Context
+	renderer        *resvg.Renderer
+	initOnce        sync.Once
+	initErr         error
+	initMu          sync.Mutex
+)
+
+func initializeRenderer() error {
+	initOnce.Do(func() {
+		ctx, err := resvg.NewContext(context.Background())
+		if err != nil {
+			initErr = fmt.Errorf("failed to create resvg context: %w", err)
+			return
+		}
+		contextInstance = ctx
+
+		rend, err := ctx.NewRenderer()
+		if err != nil {
+			initErr = fmt.Errorf("failed to create resvg renderer: %w", err)
+			return
+		}
+		renderer = rend
+	})
+	return initErr
+}
 
 // SvgToPng converts an SVG file to PNG format at the specified pixel size.
 //
@@ -26,27 +52,25 @@ import (
 //
 // Returns the PNG-encoded image data as bytes, or an error if conversion fails.
 func SvgToPng(svgPath string, pxSize int) ([]byte, error) {
-	svgFile, err := os.Open(svgPath)
+	err := initializeRenderer()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to initialize resvg renderer: %w", err)
 	}
-	defer svgFile.Close()
 
-	icon, err := oksvg.ReadIconStream(svgFile)
+	svgData, err := os.ReadFile(svgPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to read svg file: %w", err)
 	}
 
-	canvas := image.NewRGBA(image.Rect(0, 0, pxSize, pxSize))
-	icon.SetTarget(0, 0, float64(pxSize), float64(pxSize))
 
-	scanner := rasterx.NewScannerGV(pxSize, pxSize, canvas, canvas.Bounds())
-	raster := rasterx.NewDasher(pxSize, pxSize, scanner)
-	icon.Draw(raster, 1.0)
 
-	var buffer bytes.Buffer
-	if err := png.Encode(&buffer, canvas); err != nil {
-		return nil, err
+
+	renderer.SetDefaultSize(float32(pxSize), float32(pxSize))
+
+	pngData, err := renderer.Render(svgData)
+	if err != nil {
+		return nil, fmt.Errorf("resvg render failed: %w", err)
 	}
-	return buffer.Bytes(), nil
+
+	return pngData, nil
 }
