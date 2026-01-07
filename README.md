@@ -159,6 +159,6 @@ scripts\uninstall.bat     # Windows
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
-
-- [oksvg](https://github.com/srwiley/oksvg) - SVG parsing and rendering
-- [rasterx](https://github.com/srwiley/rasterx) - Rasterization engine
+- [resvg](https://github.com/linebender/resvg) - Rust SVG rendering engine with full SVG 2.0 support
+- [wazero](https:/github.com/tetratelabs/wazero) - Go WebAssembly runtime
+- [resvg-go](https://github.com/kanrichan/resvg-go) - SVG parsing and rendering
