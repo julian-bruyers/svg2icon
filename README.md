@@ -160,5 +160,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 - [resvg](https://github.com/linebender/resvg) - Rust SVG rendering engine with full SVG 2.0 support
-- [wazero](https:/github.com/tetratelabs/wazero) - Go WebAssembly runtime
-- [resvg-go](https://github.com/kanrichan/resvg-go) - SVG parsing and rendering
+- [wazero](https://github.com/wazero/wazero) - Go WebAssembly runtime
+- [resvg-go](https://github.com/kanrichan/resvg-go) - Go WebAssembly wrapper for resvg via wazero
